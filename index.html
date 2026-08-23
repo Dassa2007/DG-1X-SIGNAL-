@@ -1,545 +1,1109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DG 1X SIGNAL - Pro Predictor</title>
-    <meta name="monetag" content="932611b9c4f18aaae924cd513db14535">
-    <script>(function(s){s.dataset.zone='11636100',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <meta name="monetag" content="932611b9c4f18aaae924cd513db14535" />
+    <script>
+        (function(s) {
+            s.dataset.zone = '11636100';
+            s.src = 'https://al5sm.com/tag.min.js';
+        })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+
     <style>
+        /* ─── ROOT VARIABLES ─── */
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --accent-color: #10b981;
-            --1xbet-blue: #14805e;
-            --btn-hover: #059669;
-            --border-color: #334155;
+            --bg-primary: #070b14;
+            --bg-secondary: #0f1a2b;
+            --bg-card: #132035;
+            --bg-card-hover: #1a2d47;
+            --text-primary: #f0f4ff;
+            --text-secondary: #8899bb;
+            --text-muted: #556688;
+            --accent-1: #00f5a0;
+            --accent-2: #00d9f5;
+            --accent-gradient: linear-gradient(135deg, #00f5a0, #00d9f5);
+            --border-color: rgba(0, 245, 160, 0.12);
+            --shadow-glow: 0 8px 40px rgba(0, 245, 160, 0.08);
+            --radius: 20px;
+            --radius-sm: 12px;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .light-mode {
-            --bg-color: #f1f5f9;
-            --card-bg: #ffffff;
-            --text-color: #0f172a;
-            --accent-color: #059669;
-            --1xbet-blue: #10b981;
-            --btn-hover: #047857;
-            --border-color: #cbd5e1;
+            --bg-primary: #f0f4ff;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f5f9ff;
+            --text-primary: #0a1628;
+            --text-secondary: #334466;
+            --text-muted: #8899bb;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --shadow-glow: 0 8px 40px rgba(0, 0, 0, 0.06);
         }
 
+        /* ─── RESET & BASE ─── */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Poppins', sans-serif;
-            transition: background 0.3s, color 0.3s;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
+            padding: 20px;
+            transition: background var(--transition), color var(--transition);
             position: relative;
+            overflow-x: hidden;
         }
 
-        /* Background Animated Glow */
+        /* ─── ANIMATED BG GLOW ─── */
         .bg-glow {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: rgba(16, 185, 129, 0.15);
-            filter: blur(100px);
+            position: fixed;
+            width: 600px;
+            height: 600px;
             border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.25;
             z-index: 0;
-            animation: float 6s infinite alternate;
+            pointer-events: none;
+            animation: glowFloat 10s ease-in-out infinite alternate;
         }
 
-        @keyframes float {
-            0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-50px) scale(1.2); }
+        .bg-glow:nth-child(1) {
+            background: #00f5a0;
+            top: -15%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+        .bg-glow:nth-child(2) {
+            background: #00d9f5;
+            bottom: -15%;
+            right: -10%;
+            animation-delay: 5s;
         }
 
+        @keyframes glowFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(40px, -40px) scale(1.2);
+            }
+        }
+
+        /* ─── APP CONTAINER ─── */
         .app-container {
             width: 100%;
-            max-width: 440px;
-            background: var(--card-bg);
+            max-width: 820px;
+            background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-glow), 0 20px 60px rgba(0, 0, 0, 0.4);
             z-index: 1;
-            overflow: hidden;
             position: relative;
-            margin: 20px;
+            overflow: hidden;
+            transition: background var(--transition), border-color var(--transition);
+            backdrop-filter: blur(2px);
         }
 
-        /* Top Bar */
+        /* ─── TOP BAR ─── */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
+            padding: 18px 28px;
             border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            transition: background var(--transition);
         }
 
         .logo {
-            font-size: 18px;
+            font-family: 'Orbitron', monospace;
             font-weight: 900;
-            color: var(--1xbet-blue);
-            letter-spacing: 1px;
+            font-size: 20px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo small {
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.5;
+            -webkit-text-fill-color: var(--text-secondary);
+            background: none;
+            letter-spacing: 0.5px;
         }
 
         .tools-bar {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            align-items: center;
         }
 
         .icon-btn {
-            background: none;
-            border: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
             cursor: pointer;
             font-size: 18px;
-            color: var(--text-color);
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Pages */
+        .icon-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-1);
+            transform: scale(1.05);
+            color: var(--text-primary);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-1);
+            box-shadow: 0 0 20px rgba(0, 245, 160, 0.4);
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.4;
+                transform: scale(0.8);
+            }
+        }
+
+        /* ─── PAGES ─── */
         .page {
             display: none;
-            padding: 25px;
-            animation: fadeIn 0.4s ease-in-out;
+            padding: 28px 30px;
+            animation: fadeSlide 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .page.active {
             display: block;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Loading Screen */
-        #loading-screen {
-            display: flex;
+        /* ─── LOADING SCREEN ─── */
+        #page-loading {
+            min-height: 500px;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 450px;
+            text-align: center;
+            padding: 60px 30px;
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--border-color);
-            border-top: 4px solid var(--1xbet-blue);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        #page-loading.active {
+            display: flex;
+        }
+
+        .loading-icon {
+            font-size: 72px;
             margin-bottom: 20px;
+            animation: iconPulse 1.6s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%,
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+            50% {
+                transform: scale(1.15) rotate(8deg);
+            }
+        }
+
+        .loading-spinner-ring {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-1);
+            border-right-color: var(--accent-2);
+            animation: spin 1s linear infinite;
+            margin-bottom: 24px;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
-        /* Login Page */
-        .login-box h2 {
-            font-size: 24px;
-            margin-bottom: 8px;
+        .loading-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 22px;
             font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
         }
 
-        .login-box p {
+        .loading-sub {
             font-size: 13px;
-            color: #94a3b8;
-            margin-bottom: 25px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            letter-spacing: 1px;
         }
 
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 4px;
+            margin-top: 28px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .input-group label {
+        .loading-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-gradient);
+            border-radius: 4px;
+            animation: loadProgress 2.8s ease-in-out forwards;
+        }
+
+        @keyframes loadProgress {
+            0% {
+                width: 0%;
+            }
+            30% {
+                width: 35%;
+            }
+            60% {
+                width: 68%;
+            }
+            85% {
+                width: 85%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* ─── DASHBOARD ─── */
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .dash-header h2 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .dash-header p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .dash-badge {
+            background: var(--bg-card);
+            padding: 6px 16px;
+            border-radius: 40px;
             font-size: 12px;
             font-weight: 600;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 15px;
-            background: var(--bg-color);
+            color: var(--accent-1);
             border: 1px solid var(--border-color);
-            border-radius: 10px;
-            color: var(--text-color);
-            outline: none;
-            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .primary-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--1xbet-blue);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 15px;
-            box-shadow: 0 4px 12px rgba(20, 128, 94, 0.3);
-        }
-
-        .primary-btn:hover {
-            background: var(--btn-hover);
-        }
-
-        /* Dashboard Game Grid */
+        /* ─── GAME GRID ─── */
         .games-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-top: 6px;
         }
 
         .game-card {
-            background: var(--bg-color);
+            background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: var(--radius-sm);
+            padding: 28px 16px 22px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.2s, border-color 0.2s;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--accent-gradient);
+            opacity: 0;
+            transition: opacity var(--transition);
+            border-radius: inherit;
+            z-index: 0;
+        }
+
+        .game-card:hover::before {
+            opacity: 0.06;
         }
 
         .game-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--1xbet-blue);
+            transform: translateY(-6px);
+            border-color: var(--accent-1);
+            box-shadow: 0 12px 40px rgba(0, 245, 160, 0.10);
+            background: var(--bg-card-hover);
         }
 
-        .game-card span {
-            font-size: 30px;
+        .game-card:active {
+            transform: scale(0.96);
+        }
+
+        .game-card>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-card .icon-wrap {
+            font-size: 40px;
             display: block;
             margin-bottom: 8px;
+            transition: transform var(--transition);
+        }
+
+        .game-card:hover .icon-wrap {
+            transform: scale(1.12) rotate(-4deg);
         }
 
         .game-card h4 {
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: 0.3px;
         }
 
-        /* Signal Pages Styling */
+        .game-card .game-tag {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .game-card .glow-ring {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            filter: blur(60px);
+            opacity: 0;
+            transition: opacity var(--transition);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .game-card:hover .glow-ring {
+            opacity: 0.15;
+        }
+
+        /* ─── SIGNAL PAGES ─── */
         .signal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .back-btn {
             background: none;
             border: none;
-            color: var(--1xbet-blue);
+            color: var(--accent-1);
             font-weight: 600;
             cursor: pointer;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color var(--transition);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .back-btn:hover {
+            color: var(--accent-2);
+            background: rgba(0, 245, 160, 0.06);
         }
 
         .timer-badge {
-            background: rgba(20, 128, 94, 0.15);
-            color: var(--1xbet-blue);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            background: rgba(0, 245, 160, 0.08);
+            color: var(--accent-1);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 13px;
             font-weight: 700;
+            border: 1px solid rgba(0, 245, 160, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-1);
+            animation: pulseDot 1.8s ease-in-out infinite;
+        }
+
+        .signal-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .signal-subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
         }
 
         .signal-display-box {
-            background: var(--bg-color);
+            background: var(--bg-primary);
             border: 2px dashed var(--border-color);
-            border-radius: 15px;
-            padding: 30px;
+            border-radius: var(--radius-sm);
+            padding: 32px 20px;
             text-align: center;
-            margin: 20px 0;
+            margin: 16px 0 22px;
             min-height: 140px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            transition: border-color var(--transition), background var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signal-display-box .label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
         }
 
         .signal-result {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 900;
-            color: var(--1xbet-blue);
-            margin-top: 5px;
+            color: var(--accent-1);
+            transition: all var(--transition);
+            font-family: 'Orbitron', monospace;
         }
 
-        .loading-signal {
-            font-size: 14px;
-            color: #f59e0b;
+        .signal-result.loading {
+            color: var(--text-secondary);
+            font-size: 16px;
             font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            animation: pulseText 1s ease-in-out infinite;
+        }
+
+        @keyframes pulseText {
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .signal-result .highlight {
+            color: var(--accent-2);
+        }
+
+        .signal-display-box .step-indicator {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            justify-content: center;
+        }
+
+        .signal-display-box .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border-color);
+            transition: all 0.4s;
+        }
+
+        .signal-display-box .step-dot.active {
+            background: var(--accent-1);
+            box-shadow: 0 0 16px rgba(0, 245, 160, 0.4);
+            transform: scale(1.3);
+        }
+
+        .signal-display-box .step-dot.done {
+            background: var(--accent-2);
+            opacity: 0.5;
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-gradient);
+            color: #070b14;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: 0 4px 24px rgba(0, 245, 160, 0.2);
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .primary-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .primary-btn:hover::after {
+            opacity: 1;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 245, 160, 0.3);
+        }
+
+        .primary-btn:active {
+            transform: scale(0.97);
+        }
+
+        .primary-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 720px) {
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 14px;
+            }
+            .app-container {
+                max-width: 100%;
+                border-radius: 16px;
+            }
+            .page {
+                padding: 20px 18px;
+            }
+            .top-bar {
+                padding: 14px 18px;
+            }
+            .logo {
+                font-size: 16px;
+            }
+            .signal-result {
+                font-size: 26px;
+            }
+            .dash-header h2 {
+                font-size: 19px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .games-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .game-card {
+                padding: 18px 12px 16px;
+            }
+            .game-card .icon-wrap {
+                font-size: 30px;
+            }
+            .game-card h4 {
+                font-size: 12px;
+            }
+            .signal-title {
+                font-size: 18px;
+            }
+            .signal-display-box {
+                min-height: 110px;
+                padding: 22px 14px;
+            }
+            .signal-result {
+                font-size: 22px;
+            }
+        }
+
+        /* ─── SCROLLBAR ─── */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-1);
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
 
+    <!-- ─── BG GLOWS ─── -->
+    <div class="bg-glow"></div>
     <div class="bg-glow"></div>
 
+    <!-- ─── APP ─── -->
     <div class="app-container">
-        <!-- Top Navigation Bar -->
+
+        <!-- ─── TOP BAR ─── -->
         <div class="top-bar">
-            <div class="logo">DG 1X SIGNAL</div>
+            <div class="logo">
+                DG 1X
+                <small>SIGNAL</small>
+            </div>
             <div class="tools-bar">
-                <button class="icon-btn" onclick="toggleTheme()">🌓</button>
+                <span class="status-dot" title="Live"></span>
+                <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme">🌓</button>
             </div>
         </div>
 
-        <!-- 1. LOADING PAGE (Initial) -->
+        <!-- ════════════════════════════════════════════ -->
+        <!-- 1. LOADING PAGE (entry)                     -->
+        <!-- ════════════════════════════════════════════ -->
         <div id="page-loading" class="page active">
-            <div id="loading-screen">
-                <div class="spinner"></div>
-                <h3 style="font-weight: 600; font-size: 16px;">Loading DG Systems...</h3>
-                <p style="font-size: 12px; color: #94a3b8; margin-top: 5px;">Secure 1XBET AI Engine</p>
+            <div class="loading-icon">📡</div>
+            <div class="loading-spinner-ring"></div>
+            <div class="loading-title">DG 1X ENGINE</div>
+            <div class="loading-sub">Initializing secure signal processor …</div>
+            <div class="loading-progress">
+                <div class="loading-progress-bar"></div>
             </div>
         </div>
 
-        <!-- 2. LOGIN PAGE -->
-        <div id="page-login" class="page">
-            <div class="login-box">
-                <h2>Member Login</h2>
-                <p>Enter your 1XBET Account ID to access VIP Signals</p>
-                
-                <div class="input-group">
-                    <label>1XBET User ID / Email</label>
-                    <input type="text" id="userId" placeholder="e.g. 84920192">
-                </div>
-                <div class="input-group">
-                    <label>Activation Key</label>
-                    <input type="password" id="secretKey" placeholder="••••••••">
-                </div>
-
-                <button class="primary-btn" onclick="handleLogin()">Connect Account</button>
-            </div>
-        </div>
-
-        <!-- 3. HOME / GAMES DASHBOARD -->
+        <!-- ════════════════════════════════════════════ -->
+        <!-- 2. DASHBOARD                               -->
+        <!-- ════════════════════════════════════════════ -->
         <div id="page-dashboard" class="page">
-            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 5px;">Select Game</h3>
-            <p style="font-size: 12px; color: #94a3b8;">Choose a game to generate live signals</p>
+            <div class="dash-header">
+                <div>
+                    <h2>🎯 Select Game</h2>
+                    <p>Choose a title to generate live prediction signals</p>
+                </div>
+                <div class="dash-badge">
+                    <span>●</span> Live
+                </div>
+            </div>
 
             <div class="games-grid">
                 <div class="game-card" onclick="openSignalPage('aviator')">
-                    <span>✈️</span>
+                    <div class="glow-ring"></div>
+                    <span class="icon-wrap">✈️</span>
                     <h4>Aviator</h4>
+                    <span class="game-tag">Multiplier</span>
                 </div>
                 <div class="game-card" onclick="openSignalPage('mines')">
-                    <span>💣</span>
+                    <div class="glow-ring"></div>
+                    <span class="icon-wrap">💣</span>
                     <h4>Mines</h4>
+                    <span class="game-tag">Safe Spots</span>
                 </div>
                 <div class="game-card" onclick="openSignalPage('fruit')">
-                    <span>🍓</span>
+                    <div class="glow-ring"></div>
+                    <span class="icon-wrap">🍓</span>
                     <h4>Fruit Cocktail</h4>
+                    <span class="game-tag">Combination</span>
                 </div>
                 <div class="game-card" onclick="openSignalPage('royal')">
-                    <span>🃏</span>
+                    <div class="glow-ring"></div>
+                    <span class="icon-wrap">🃏</span>
                     <h4>Royal High</h4>
+                    <span class="game-tag">High / Low</span>
                 </div>
             </div>
         </div>
 
-        <!-- 4. SIGNAL PAGES -->
-        <!-- AVIATOR SIGNAL -->
+        <!-- ════════════════════════════════════════════ -->
+        <!-- 3. SIGNAL PAGES                            -->
+        <!-- ════════════════════════════════════════════ -->
+
+        <!-- ─── AVIATOR ─── -->
         <div id="page-aviator" class="page">
             <div class="signal-header">
                 <button class="back-btn" onclick="goToDashboard()">← Back</button>
-                <div class="timer-badge" id="timer-aviator">Next: 30s</div>
+                <div class="timer-badge" id="timer-aviator">
+                    <span class="dot"></span> Next: 30s
+                </div>
             </div>
-            <h3 style="text-align: center; font-size: 20px; font-weight: 700;">✈️ Aviator Predictor</h3>
-            <div class="signal-display-box">
-                <p style="font-size: 12px; color: #94a3b8;">Recommended Cashout</p>
-                <div class="signal-result" id="res-aviator">Click Below</div>
+            <div class="signal-title">✈️ Aviator</div>
+            <div class="signal-subtitle">Recommended cash‑out multiplier</div>
+            <div class="signal-display-box" id="box-aviator">
+                <span class="label">Prediction</span>
+                <div class="signal-result" id="res-aviator">—</div>
+                <div class="step-indicator" id="steps-aviator">
+                    <span class="step-dot"></span>
+                    <span class="step-dot"></span>
+                    <span class="step-dot"></span>
+                </div>
             </div>
-            <button class="primary-btn" onclick="generateAviatorSignal()">Generate Signal</button>
+            <button class="primary-btn" id="btn-aviator" onclick="generateAviatorSignal()">⚡ Generate Signal</button>
         </div>
 
-        <!-- MINES SIGNAL -->
+        <!-- ─── MINES ─── -->
         <div id="page-mines" class="page">
             <div class="signal-header">
                 <button class="back-btn" onclick="goToDashboard()">← Back</button>
-                <div class="timer-badge" id="timer-mines">Next: 30s</div>
+                <div class="timer-badge" id="timer-mines">
+                    <span class="dot"></span> Next: 30s
+                </div>
             </div>
-            <h3 style="text-align: center; font-size: 20px; font-weight: 700;">💣 Mines Safe Spots</h3>
-            <div class="signal-display-box">
-                <p style="font-size: 12px; color: #94a3b8;">Safe Click Coordinates</p>
-                <div class="signal-result" id="res-mines" style="font-size: 20px;">Click Below</div>
+            <div class="signal-title">💣 Mines</div>
+            <div class="signal-subtitle">Optimal safe tile coordinates</div>
+            <div class="signal-display-box" id="box-mines">
+                <span class="label">Safe Spots</span>
+                <div class="signal-result" id="res-mines" style="font-size:24px;">—</div>
+                <div class="step-indicator" id="steps-mines">
+                    <span class="step-dot"></span>
+                    <span class="step-dot"></span>
+                    <span class="step-dot"></span>
+                </div>
             </div>
-            <button class="primary-btn" onclick="generateMinesSignal()">Generate Signal</button>
+            <button class="primary-btn" id="btn-mines" onclick="generateMinesSignal()">⚡ Generate Signal</button>
         </div>
 
-        <!-- FRUIT COCKTAIL SIGNAL -->
+        <!-- ─── FRUIT ─── -->
         <div id="page-fruit" class="page">
             <div class="signal-header">
                 <button class="back-btn" onclick="goToDashboard()">← Back</button>
-                <div class="timer-badge" id="timer-fruit">Next: 30s</div>
+                <div class="timer-badge" id="timer-fruit">
+                    <span class="dot"></span> Next: 30s
+                </div>
             </div>
-            <h3 style="text-align: center; font-size: 20px; font-weight: 700;">🍓 Fruit Cocktail</h3>
-            <div class="signal-display-box">
-                <p style="font-size: 12px; color: #94a3b8;">Winning Combination</p>
-                <div class="signal-result" id="res-fruit">Click Below</div>
+            <div class="signal-title">🍓 Fruit Cocktail</div>
+            <div class="signal-subtitle">Winning reel combination</div>
+            <div class="signal-display-box" id="box-fruit">
+                <span class="label">Combination</span>
+                <div class="signal-result" id="res-fruit">—</div>
+                <div class="step-indicator" id="steps-fruit">
+                    <span class="step-dot"></span>
+                    <span class="step-dot"></span>
+                    <span class="step-dot"></span>
+                </div>
             </div>
-            <button class="primary-btn" onclick="generateFruitSignal()">Generate Signal</button>
+            <button class="primary-btn" id="btn-fruit" onclick="generateFruitSignal()">⚡ Generate Signal</button>
         </div>
 
-        <!-- ROYAL HIGH SIGNAL -->
+        <!-- ─── ROYAL ─── -->
         <div id="page-royal" class="page">
             <div class="signal-header">
                 <button class="back-btn" onclick="goToDashboard()">← Back</button>
-                <div class="timer-badge" id="timer-royal">Next: 30s</div>
+                <div class="timer-badge" id="timer-royal">
+                    <span class="dot"></span> Next: 30s
+                </div>
             </div>
-            <h3 style="text-align: center; font-size: 20px; font-weight: 700;">🃏 Royal High-Low</h3>
-            <div class="signal-display-box">
-                <p style="font-size: 12px; color: #94a3b8;">Prediction</p>
-                <div class="signal-result" id="res-royal">Click Below</div>
+            <div class="signal-title">🃏 Royal High</div>
+            <div class="signal-subtitle">Card high / low prediction</div>
+            <div class="signal-display-box" id="box-royal">
+                <span class="label">Prediction</span>
+                <div class="signal-result" id="res-royal">—</div>
+                <div class="step-indicator" id="steps-royal">
+                    <span class="step-dot"></span>
+                    <span class="step-dot"></span>
+                    <span class="step-dot"></span>
+                </div>
             </div>
-            <button class="primary-btn" onclick="generateRoyalSignal()">Generate Signal</button>
+            <button class="primary-btn" id="btn-royal" onclick="generateRoyalSignal()">⚡ Generate Signal</button>
         </div>
+
     </div>
+    <!-- ─── END APP ─── -->
 
-    <!-- AUDIO EFFECTS (Web Audio API - No external files needed, zero errors!) -->
     <script>
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // ─── AUDIO (Web Audio – no files needed) ───
+        const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 
-        function playClickSound() {
+        function playClick() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            let osc = audioCtx.createOscillator();
-            let gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.1);
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'sine';
+            o.frequency.setValueAtTime(700, audioCtx.currentTime);
+            g.gain.setValueAtTime(0.04, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.start();
+            o.stop(audioCtx.currentTime + 0.08);
         }
 
-        function playSignalSound() {
+        function playSignal() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            let osc = audioCtx.createOscillator();
-            let gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.3);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.3);
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'triangle';
+            o.frequency.setValueAtTime(280, audioCtx.currentTime);
+            o.frequency.exponentialRampToValueAtTime(920, audioCtx.currentTime + 0.4);
+            g.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.start();
+            o.stop(audioCtx.currentTime + 0.4);
         }
 
-        // Initial Loading transition to Login
-        window.onload = function() {
-            setTimeout(() => {
-                switchPage('page-login');
-            }, 2000);
-        };
-
-        function switchPage(pageId) {
-            playClickSound();
+        // ─── PAGE SWITCH ───
+        function switchPage(id) {
+            playClick();
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            document.getElementById(id).classList.add('active');
         }
 
+        // ─── THEME ───
         function toggleTheme() {
-            playClickSound();
+            playClick();
             document.body.classList.toggle('light-mode');
         }
 
-        function handleLogin() {
-            let uid = document.getElementById('userId').value.trim();
-            if(uid === "") {
-                alert("Please enter your 1XBET User ID!");
-                return;
-            }
-            playClickSound();
+        // ─── LOADING → DASHBOARD ───
+        window.addEventListener('load', () => {
+            // After the loading animation finishes, go to dashboard
+            setTimeout(() => {
+                switchPage('page-dashboard');
+            }, 3200);
+        });
+
+        // ─── NAV ───
+        function goToDashboard() {
+            playClick();
             switchPage('page-dashboard');
         }
 
         function openSignalPage(game) {
-            playClickSound();
+            playClick();
             switchPage('page-' + game);
             startTimer('timer-' + game);
+            // reset result display
+            const res = document.getElementById('res-' + game);
+            if (res) res.textContent = '—';
+            const steps = document.getElementById('steps-' + game);
+            if (steps) {
+                steps.querySelectorAll('.step-dot').forEach(d => { d.className = 'step-dot'; });
+            }
+            // enable button
+            const btn = document.getElementById('btn-' + game);
+            if (btn) btn.disabled = false;
         }
 
-        function goToDashboard() {
-            playClickSound();
-            switchPage('page-dashboard');
-        }
+        // ─── TIMERS ───
+        const timers = {};
 
-        // Timers for Signal pages
-        function startTimer(elementId) {
-            let timeLeft = 30;
-            let timerElement = document.getElementById(elementId);
-            let interval = setInterval(() => {
-                timeLeft--;
-                timerElement.innerText = `Next: ${timeLeft}s`;
-                if(timeLeft <= 0) {
-                    timeLeft = 30;
+        function startTimer(elId) {
+            if (timers[elId]) clearInterval(timers[elId]);
+            let left = 30;
+            const el = document.getElementById(elId);
+            if (!el) return;
+            timers[elId] = setInterval(() => {
+                left--;
+                el.innerHTML = `<span class="dot"></span> Next: ${left}s`;
+                if (left <= 0) {
+                    left = 30;
                 }
             }, 1000);
         }
 
-        // Signal Generators with realistic animation
-        function generateAviatorSignal() {
-            playSignalSound();
-            let resBox = document.getElementById('res-aviator');
-            resBox.innerHTML = `<span class="loading-signal">Analyzing Radar...</span>`;
+        // ─── HELPER: fake loading with steps ───
+        function runFakeLoad(gameId, resultFn, resultDisplay) {
+            const btn = document.getElementById('btn-' + gameId);
+            const res = document.getElementById('res-' + gameId);
+            const steps = document.getElementById('steps-' + gameId);
+            const box = document.getElementById('box-' + gameId);
+
+            if (!res || !steps) return;
+
+            // disable button
+            if (btn) btn.disabled = true;
+
+            // reset steps
+            const dots = steps.querySelectorAll('.step-dot');
+            dots.forEach(d => { d.className = 'step-dot'; });
+
+            // show loading state
+            res.className = 'signal-result loading';
+            res.textContent = '🔍 Analyzing …';
+
+            // step 1
             setTimeout(() => {
-                let multiplier = (Math.random() * (4.2 - 1.3) + 1.3).toFixed(2);
-                resBox.innerHTML = `${multiplier}x`;
+                if (dots[0]) dots[0].className = 'step-dot active';
+                res.textContent = '📊 Processing data …';
+                playClick();
+            }, 400);
+
+            // step 2
+            setTimeout(() => {
+                if (dots[0]) dots[0].className = 'step-dot done';
+                if (dots[1]) dots[1].className = 'step-dot active';
+                res.textContent = '🧠 Neural compute …';
+                playClick();
+            }, 900);
+
+            // step 3 + result
+            setTimeout(() => {
+                if (dots[0]) dots[0].className = 'step-dot done';
+                if (dots[1]) dots[1].className = 'step-dot done';
+                if (dots[2]) dots[2].className = 'step-dot active';
+                res.textContent = '⚡ Finalizing …';
+                playClick();
             }, 1500);
+
+            // final result
+            setTimeout(() => {
+                const val = resultFn();
+                res.className = 'signal-result';
+                res.innerHTML = val;
+                if (dots[2]) dots[2].className = 'step-dot done';
+                playSignal();
+                if (btn) btn.disabled = false;
+
+                // subtle box glow
+                if (box) {
+                    box.style.borderColor = 'var(--accent-1)';
+                    setTimeout(() => { box.style.borderColor = ''; }, 1200);
+                }
+            }, 2200);
+        }
+
+        // ─── SIGNAL GENERATORS ───
+
+        function generateAviatorSignal() {
+            runFakeLoad('aviator', () => {
+                const mult = (Math.random() * (5.8 - 1.2) + 1.2).toFixed(2);
+                return `<span style="font-size:38px;">${mult}x</span> <span style="font-size:16px;color:var(--text-secondary);font-weight:400;">🚀</span>`;
+            });
         }
 
         function generateMinesSignal() {
-            playSignalSound();
-            let resBox = document.getElementById('res-mines');
-            resBox.innerHTML = `<span class="loading-signal">Decrypting Grid...</span>`;
-            setTimeout(() => {
-                let spots = [2, 5, 9, 12, 15, 18].sort(() => 0.5 - Math.random()).slice(0, 3);
-                resBox.innerHTML = `Safe: [ ${spots.join(', ')} ]`;
-            }, 1500);
+            runFakeLoad('mines', () => {
+                const pool = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
+                const shuffled = pool.sort(() => Math.random() - 0.5);
+                const picks = shuffled.slice(0, 5).sort((a, b) => a - b);
+                return `<span style="font-size:22px;font-weight:700;">${picks.join('  •  ')}</span>`;
+            });
         }
 
         function generateFruitSignal() {
-            playSignalSound();
-            let resBox = document.getElementById('res-fruit');
-            resBox.innerHTML = `<span class="loading-signal">Spinning Reels...</span>`;
-            setTimeout(() => {
-                let fruits = ['🍓 🍓 🍓', '🍋 🍋 🍋', '🍉 🍉 🍉', '⭐ ⭐ ⭐'];
-                let selected = fruits[Math.floor(Math.random() * fruits.length)];
-                resBox.innerHTML = selected;
-            }, 1500);
+            runFakeLoad('fruit', () => {
+                const combos = [
+                    '🍓 🍓 🍓',
+                    '🍋 🍋 🍋',
+                    '🍉 🍉 🍉',
+                    '⭐ ⭐ ⭐',
+                    '🍒 🍒 🍒',
+                    '🍊 🍊 🍊',
+                    '🍇 🍇 🍇',
+                    '🎰 🎰 🎰'
+                ];
+                const pick = combos[Math.floor(Math.random() * combos.length)];
+                return `<span style="font-size:36px;letter-spacing:4px;">${pick}</span>`;
+            });
         }
 
         function generateRoyalSignal() {
-            playSignalSound();
-            let resBox = document.getElementById('res-royal');
-            resBox.innerHTML = `<span class="loading-signal">Shuffling Deck...</span>`;
-            setTimeout(() => {
-                let cards = ['HIGH (♠ K)', 'LOW (♣ 4)', 'HIGH (♥ A)', 'LOW (♦ 2)'];
-                let selected = cards[Math.floor(Math.random() * cards.length)];
-                resBox.innerHTML = selected;
-            }, 1500);
+            runFakeLoad('royal', () => {
+                const suits = ['♠', '♥', '♦', '♣'];
+                const ranks = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
+                const s = suits[Math.floor(Math.random() * suits.length)];
+                const r = ranks[Math.floor(Math.random() * ranks.length)];
+                const hiLo = Math.random() > 0.5 ? 'HIGH' : 'LOW';
+                const color = hiLo === 'HIGH' ? 'var(--accent-1)' : 'var(--accent-2)';
+                return `<span style="font-size:28px;">${hiLo}</span> <span style="font-size:34px;font-weight:400;">${r}${s}</span>`;
+            });
         }
+
+        // ─── KEYBOARD SHORTCUT: Escape to dashboard ───
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const active = document.querySelector('.page.active');
+                if (active && active.id !== 'page-dashboard' && active.id !== 'page-loading') {
+                    goToDashboard();
+                }
+            }
+        });
     </script>
+
 </body>
 </html>
-
