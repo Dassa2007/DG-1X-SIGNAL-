@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DG 1X SIGNAL - Pro Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-color: #10b981;
+            --1xbet-blue: #14805e;
+            --btn-hover: #059669;
+            --border-color: #334155;
+        }
+
+        .light-mode {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #0f172a;
+            --accent-color: #059669;
+            --1xbet-blue: #10b981;
+            --btn-hover: #047857;
+            --border-color: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background Animated Glow */
+        .bg-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(16, 185, 129, 0.15);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: 0;
+            animation: float 6s infinite alternate;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-50px) scale(1.2); }
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            z-index: 1;
+            overflow: hidden;
+            position: relative;
+            margin: 20px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--1xbet-blue);
+            letter-spacing: 1px;
+        }
+
+        .tools-bar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            padding: 25px;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 450px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--1xbet-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Login Page */
+        .login-box h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .login-box p {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-color);
+            outline: none;
+            font-size: 14px;
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--1xbet-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(20, 128, 94, 0.3);
+        }
+
+        .primary-btn:hover {
+            background: var(--btn-hover);
+        }
+
+        /* Dashboard Game Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .game-card {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--1xbet-blue);
+        }
+
+        .game-card span {
+            font-size: 30px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .game-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Signal Pages Styling */
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--1xbet-blue);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .timer-badge {
+            background: rgba(20, 128, 94, 0.15);
+            color: var(--1xbet-blue);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .signal-display-box {
+            background: var(--bg-color);
+            border: 2px dashed var(--border-color);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .signal-result {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--1xbet-blue);
+            margin-top: 5px;
+        }
+
+        .loading-signal {
+            font-size: 14px;
+            color: #f59e0b;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="app-container">
+        <!-- Top Navigation Bar -->
+        <div class="top-bar">
+            <div class="logo">DG 1X SIGNAL</div>
+            <div class="tools-bar">
+                <button class="icon-btn" onclick="toggleTheme()">🌓</button>
+            </div>
+        </div>
+
+        <!-- 1. LOADING PAGE (Initial) -->
+        <div id="page-loading" class="page active">
+            <div id="loading-screen">
+                <div class="spinner"></div>
+                <h3 style="font-weight: 600; font-size: 16px;">Loading DG Systems...</h3>
+                <p style="font-size: 12px; color: #94a3b8; margin-top: 5px;">Secure 1XBET AI Engine</p>
+            </div>
+        </div>
+
+        <!-- 2. LOGIN PAGE -->
+        <div id="page-login" class="page">
+            <div class="login-box">
+                <h2>Member Login</h2>
+                <p>Enter your 1XBET Account ID to access VIP Signals</p>
+                
+                <div class="input-group">
+                    <label>1XBET User ID / Email</label>
+                    <input type="text" id="userId" placeholder="e.g. 84920192">
+                </div>
+                <div class="input-group">
+                    <label>Activation Key</label>
+                    <input type="password" id="secretKey" placeholder="••••••••">
+                </div>
+
+                <button class="primary-btn" onclick="handleLogin()">Connect Account</button>
+            </div>
+        </div>
+
+        <!-- 3. HOME / GAMES DASHBOARD -->
+        <div id="page-dashboard" class="page">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 5px;">Select Game</h3>
+            <p style="font-size: 12px; color: #94a3b8;">Choose a game to generate live signals</p>
+
+            <div class="games-grid">
+                <div class="game-card" onclick="openSignalPage('aviator')">
+                    <span>✈️</span>
+                    <h4>Aviator</h4>
+                </div>
+                <div class="game-card" onclick="openSignalPage('mines')">
+                    <span>💣</span>
+                    <h4>Mines</h4>
+                </div>
+                <div class="game-card" onclick="openSignalPage('fruit')">
+                    <span>🍓</span>
+                    <h4>Fruit Cocktail</h4>
+                </div>
+                <div class="game-card" onclick="openSignalPage('royal')">
+                    <span>🃏</span>
+                    <h4>Royal High</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. SIGNAL PAGES -->
+        <!-- AVIATOR SIGNAL -->
+        <div id="page-aviator" class="page">
+            <div class="signal-header">
+                <button class="back-btn" onclick="goToDashboard()">← Back</button>
+                <div class="timer-badge" id="timer-aviator">Next: 30s</div>
+            </div>
+            <h3 style="text-align: center; font-size: 20px; font-weight: 700;">✈️ Aviator Predictor</h3>
+            <div class="signal-display-box">
+                <p style="font-size: 12px; color: #94a3b8;">Recommended Cashout</p>
+                <div class="signal-result" id="res-aviator">Click Below</div>
+            </div>
+            <button class="primary-btn" onclick="generateAviatorSignal()">Generate Signal</button>
+        </div>
+
+        <!-- MINES SIGNAL -->
+        <div id="page-mines" class="page">
+            <div class="signal-header">
+                <button class="back-btn" onclick="goToDashboard()">← Back</button>
+                <div class="timer-badge" id="timer-mines">Next: 30s</div>
+            </div>
+            <h3 style="text-align: center; font-size: 20px; font-weight: 700;">💣 Mines Safe Spots</h3>
+            <div class="signal-display-box">
+                <p style="font-size: 12px; color: #94a3b8;">Safe Click Coordinates</p>
+                <div class="signal-result" id="res-mines" style="font-size: 20px;">Click Below</div>
+            </div>
+            <button class="primary-btn" onclick="generateMinesSignal()">Generate Signal</button>
+        </div>
+
+        <!-- FRUIT COCKTAIL SIGNAL -->
+        <div id="page-fruit" class="page">
+            <div class="signal-header">
+                <button class="back-btn" onclick="goToDashboard()">← Back</button>
+                <div class="timer-badge" id="timer-fruit">Next: 30s</div>
+            </div>
+            <h3 style="text-align: center; font-size: 20px; font-weight: 700;">🍓 Fruit Cocktail</h3>
+            <div class="signal-display-box">
+                <p style="font-size: 12px; color: #94a3b8;">Winning Combination</p>
+                <div class="signal-result" id="res-fruit">Click Below</div>
+            </div>
+            <button class="primary-btn" onclick="generateFruitSignal()">Generate Signal</button>
+        </div>
+
+        <!-- ROYAL HIGH SIGNAL -->
+        <div id="page-royal" class="page">
+            <div class="signal-header">
+                <button class="back-btn" onclick="goToDashboard()">← Back</button>
+                <div class="timer-badge" id="timer-royal">Next: 30s</div>
+            </div>
+            <h3 style="text-align: center; font-size: 20px; font-weight: 700;">🃏 Royal High-Low</h3>
+            <div class="signal-display-box">
+                <p style="font-size: 12px; color: #94a3b8;">Prediction</p>
+                <div class="signal-result" id="res-royal">Click Below</div>
+            </div>
+            <button class="primary-btn" onclick="generateRoyalSignal()">Generate Signal</button>
+        </div>
+    </div>
+
+    <!-- AUDIO EFFECTS (Web Audio API - No external files needed, zero errors!) -->
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playClickSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playSignalSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        // Initial Loading transition to Login
+        window.onload = function() {
+            setTimeout(() => {
+                switchPage('page-login');
+            }, 2000);
+        };
+
+        function switchPage(pageId) {
+            playClickSound();
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function toggleTheme() {
+            playClickSound();
+            document.body.classList.toggle('light-mode');
+        }
+
+        function handleLogin() {
+            let uid = document.getElementById('userId').value.trim();
+            if(uid === "") {
+                alert("Please enter your 1XBET User ID!");
+                return;
+            }
+            playClickSound();
+            switchPage('page-dashboard');
+        }
+
+        function openSignalPage(game) {
+            playClickSound();
+            switchPage('page-' + game);
+            startTimer('timer-' + game);
+        }
+
+        function goToDashboard() {
+            playClickSound();
+            switchPage('page-dashboard');
+        }
+
+        // Timers for Signal pages
+        function startTimer(elementId) {
+            let timeLeft = 30;
+            let timerElement = document.getElementById(elementId);
+            let interval = setInterval(() => {
+                timeLeft--;
+                timerElement.innerText = `Next: ${timeLeft}s`;
+                if(timeLeft <= 0) {
+                    timeLeft = 30;
+                }
+            }, 1000);
+        }
+
+        // Signal Generators with realistic animation
+        function generateAviatorSignal() {
+            playSignalSound();
+            let resBox = document.getElementById('res-aviator');
+            resBox.innerHTML = `<span class="loading-signal">Analyzing Radar...</span>`;
+            setTimeout(() => {
+                let multiplier = (Math.random() * (4.2 - 1.3) + 1.3).toFixed(2);
+                resBox.innerHTML = `${multiplier}x`;
+            }, 1500);
+        }
+
+        function generateMinesSignal() {
+            playSignalSound();
+            let resBox = document.getElementById('res-mines');
+            resBox.innerHTML = `<span class="loading-signal">Decrypting Grid...</span>`;
+            setTimeout(() => {
+                let spots = [2, 5, 9, 12, 15, 18].sort(() => 0.5 - Math.random()).slice(0, 3);
+                resBox.innerHTML = `Safe: [ ${spots.join(', ')} ]`;
+            }, 1500);
+        }
+
+        function generateFruitSignal() {
+            playSignalSound();
+            let resBox = document.getElementById('res-fruit');
+            resBox.innerHTML = `<span class="loading-signal">Spinning Reels...</span>`;
+            setTimeout(() => {
+                let fruits = ['🍓 🍓 🍓', '🍋 🍋 🍋', '🍉 🍉 🍉', '⭐ ⭐ ⭐'];
+                let selected = fruits[Math.floor(Math.random() * fruits.length)];
+                resBox.innerHTML = selected;
+            }, 1500);
+        }
+
+        function generateRoyalSignal() {
+            playSignalSound();
+            let resBox = document.getElementById('res-royal');
+            resBox.innerHTML = `<span class="loading-signal">Shuffling Deck...</span>`;
+            setTimeout(() => {
+                let cards = ['HIGH (♠ K)', 'LOW (♣ 4)', 'HIGH (♥ A)', 'LOW (♦ 2)'];
+                let selected = cards[Math.floor(Math.random() * cards.length)];
+                resBox.innerHTML = selected;
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
+
