@@ -106,12 +106,15 @@
                 
                 let shortUrl = longUrl;
                 try {
-                    const shortResponse = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+                    const shortResponse = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`);
                     if (shortResponse.ok) {
-                        shortUrl = await shortResponse.text();
+                        const text = await shortResponse.text();
+                        if (text.startsWith('http')) {
+                            shortUrl = text.trim();
+                        }
                     }
                 } catch (err) {
-                    console.log('Shortener skipped, using direct URL');
+                    console.log('Shortener error, using direct URL');
                 }
 
                 resultArea.innerHTML = `<b>සාර්ථකයි! ඔබේ ලින්ක් එක:</b><br><a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
@@ -124,6 +127,7 @@
         }
     }
 </script>
+
 
 </body>
 </html>
